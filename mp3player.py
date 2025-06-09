@@ -3,6 +3,7 @@ import pygame
 from pygame import mixer
 from tkinter import *
 import tkinter.font as font
+import tkinter as tk
 import os
 from tkinter import filedialog
 from tkinter import PhotoImage
@@ -10,13 +11,15 @@ from mutagen.mp3 import MP3
 from tkinter import ttk
 import matplotlib.font_manager as fm
 import matplotlib as mpl
+import random
 
 pygame.init()
 SONG_END_EVENT = pygame.USEREVENT
 mixer.music.set_endevent(SONG_END_EVENT)
 current_song = None
 is_seeking = False
-
+default_folder = "C:/Users/grish/csfolders/mp3player/musicmaxxing"
+shuffleval = False
 
 def load_folder_songs(folder_path):
     mixer.init()
@@ -85,17 +88,24 @@ def Play():
     audio = MP3(song_path)
     song_duration = audio.info.length
     elasped_time = mixer.music.get_pos() / 1000
-    if elasped_time is song_duration:
-        Next()
     seeker.config(to=song_duration)  # This sets the max value of the seeker to the length of the song
+    getcurrent()
     update_seeker()  #begin updating!
     update_timer() #more updating!
     checkfortime()
 
+def getcurrent():
+    global current_song
+    current_song = songs_list.get(ACTIVE)
+    return current_song
+
 def checkfortime():
     for event in pygame.event.get():
         if event.type == SONG_END_EVENT:
-            Next()
+            if shuffletruth == True:
+                Shuffle()
+            else:
+                Next()
 
 def Pause():
     mixer.music.pause()
@@ -131,7 +141,41 @@ def Next():
         songs_list.selection_clear(0, END)
         songs_list.activate(nextone)
         songs_list.selection_set(nextone)
- 
+
+def Shuffle():
+    getcurrent()
+    current_song = getcurrent()
+    thesongplaying2 = 0
+    shuffleone = songs_list.curselection()
+    playlistlength = 0
+    for item in os.listdir(default_folder):
+        item_path = os.path.join("C:/Users/grish/csfolders/mp3player/musicmaxxing/",item)
+    if os.path.isfile(item_path):
+        playlistlength += 1
+    if shuffleone:
+        shuffleone = [random.randint(0,playlistlength + 1)] 
+        thesong4 = songs_list.get(shuffleone)
+        song_path = os.path.join("C:/Users/grish/csfolders/mp3player/musicmaxxing/", thesong4)
+        print(current_song)
+    if current_song == thesong4:
+        Shuffle()
+    else:
+        thesongplaying2 = getcurrent()
+        print("Now playing,",thesong4)
+        mixer.music.load(song_path)
+        mixer.music.play()
+        songs_list.selection_clear(0,END)
+        songs_list.activate(shuffleone)
+        songs_list.selection_set(shuffleone)
+        global shuffletruth;
+        shuffleval = True
+        shuffletruth = shuffleval
+    
+def Mute():
+    mixer.music.set_volume(0)
+
+def Unmute():
+    mixer.music.set_volume(1)
 root = Tk()
 mixer.init()
 play_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/go!button.png")
@@ -143,6 +187,9 @@ next_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goforward!
 add_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/lenewsong!.png")
 delete_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/getridofdasong!.png")
 icon_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/yo!.png")
+shuffle_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/shuffle!.png")
+mute_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/mute!.png")
+unmute_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/unmute!.png")
 fe = fm.FontEntry(fname='C:/Users/grish/csfolders/mp3player/Assets/Newsreader-VariableFont_opsz,wght.ttf', name='Newsreader')
 fm.fontManager.ttflist.insert(0, fe)
 mpl.rcParams['font.family'] = fe.name
@@ -167,7 +214,7 @@ previousbutton = Button(root, image=previous_img, bg="#A996EB", font=thefont, co
 previousbutton.place(x=170, y=350)
 nextbutton = Button(root, image=next_img, bg="#A996EB", font=thefont, command=Next)
 nextbutton.place(x=210, y=350)
-seeker = Scale(root, from_=0, to=100, orient=HORIZONTAL, length=90,height=100, bg="#A996EB", fg="#000000", font=thefont, command=setdamusic)
+seeker = Scale(root, from_=0, to=100, orient=HORIZONTAL, length=90, bg="#A996EB", fg="#000000", font=thefont, command=setdamusic)
 seeker.place(x=250,y=348)
 addbutton = Button(root,image=add_img,bg="#120F1B", font=thefont,command=addlesongs)
 addbutton.place(x=346,y=10)
@@ -175,6 +222,12 @@ deletebutton=Button(root, image=delete_img,bg="#120F1B",font=thefont,command=del
 deletebutton.place(x=346,y=50)
 timer_label= Label(root, text="00:00", bg="#120F1B", fg="#FFFFFF", font=thefont)
 timer_label.place(x=298,y=315)
+shufflebutton = Button(root, image=shuffle_img, bg="#120F1B",font=thefont, command=Shuffle)
+shufflebutton.place(x=346,y=90)
+mutebutton = Button(root, image=mute_img, bg="#120F1B",font=thefont, command=Mute)
+mutebutton.place(x=346,y=130)
+unmutebutton = mutebutton = Button(root, image=unmute_img, bg="#120F1B",font=thefont, command=Unmute)
+unmutebutton.place(x=346,y=170)
 themenu = Menu(root)
 root.config(menu=themenu)
 addsongmenu = Menu(themenu, tearoff=False)
@@ -182,7 +235,6 @@ themenu.add_cascade(label="The Menu", menu=addsongmenu)
 addsongmenu.add_command(label="Add Songs", command=addlesongs)
 addsongmenu.add_command(label="Delete Song", command=deletelesong)
 
-default_folder = "C:/Users/grish/csfolders/mp3player/musicmaxxing"
 load_folder_songs(default_folder)
 
 mainloop()
