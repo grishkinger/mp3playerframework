@@ -82,7 +82,7 @@ def Play():
     try:
         mixer.music.load(song_path)
         mixer.music.play(loops=0)
-        print(f"This is gas: {song_path}")
+        print(f"Now Playing: {song_path}")
     except Exception as e:
         print(f"song not found: {e}")
     audio = MP3(song_path)
