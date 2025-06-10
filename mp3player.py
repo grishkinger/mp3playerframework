@@ -188,8 +188,10 @@ def Shuffle():
         setsongplaying(playingsong)
 
 def setsongplaying(playingsong):
-    print("Now Playing:",playingsong)
-    nowplayinglabel.config(text=f"Now Playing: {playingsong}")
+    max_length = 25 
+    truncated_song = playingsong[:max_length] + "..." if len(playingsong) > max_length else playingsong
+    print("Now Playing:", truncated_song)
+    nowplayinglabel.config(text=f"Now Playing: {truncated_song}")
 
 def Mute():
     mixer.music.set_volume(0)
@@ -259,9 +261,8 @@ themenu.add_cascade(label="The Menu", menu=addsongmenu)
 addsongmenu.add_command(label="Add Songs", command=addlesongs)
 addsongmenu.add_command(label="Delete Song", command=deletelesong)
 addsongmenu.add_command(label="Browse Playlists", command=chooseplaylist)
-nowplayinglabel = Label(root, text="",bg="#A996EB",fg="#000000", font=thefont)
+nowplayinglabel = Label(root, text="",bg="#120F1B",fg="#FFFFFF",font=thefont)
 nowplayinglabel.place(x=10,y=315)
-
 class MuterButton(tk.Button):
     def __init__(self, parent, images, functions, initial_state=0, **kwargs):
         super().__init__(parent, **kwargs)
