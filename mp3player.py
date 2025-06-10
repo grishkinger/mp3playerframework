@@ -18,8 +18,9 @@ SONG_END_EVENT = pygame.USEREVENT
 mixer.music.set_endevent(SONG_END_EVENT)
 current_song = None
 is_seeking = False
-default_folder = "C:/Users/grish/csfolders/mp3player/musicmaxxing"
-shuffleval = False
+default_folder = "C:/Users/grish/csfolders/mp3player/playlists/musicmaxxing"
+theplaylist_path = default_folder
+shuffletruth = False
 
 def load_folder_songs(folder_path):
     mixer.init()
@@ -48,6 +49,9 @@ def update_seeker():
     root.after(1000, update_seeker)  # So update every second!
 
 def update_timer():
+    global seconds
+    if is_seeking==True:
+        timer_label.config(text=f"{timer(seconds)}")
     if mixer.music.get_busy():
         elapsed_time = mixer.music.get_pos() / 1000
         timer_label.config(text=f"{timer(elapsed_time)}")
@@ -57,32 +61,37 @@ def update_timer():
 
 def setdamusic(value):
     global is_seeking
+    global seconds
     is_seeking=True
     mixer.music.set_pos(float(value))
+    seconds = (float(value))
+    timer(seconds)
+    update_timer()
 
 def seekerrelease(event=None):
     global is_seeking
     is_seeking=False
     setdamusic(seeker.get())
 
-def timer(seconds):
+def timer(seconds):  
     minutes=int(seconds // 60)
     seconds=int(seconds % 60)
     return f"{minutes:02}:{seconds:02}"
 
-
 def Play():
     global current_song
+    global theplaylist_path
     song = songs_list.get(ACTIVE)
     if mixer.music.get_busy():
         return
     else:
         current_song = song
-    song_path = os.path.join("C:/Users/grish/csfolders/mp3player/musicmaxxing/", song)
+    song_path = os.path.join(theplaylist_path, song)
+    print(song_path)
     try:
         mixer.music.load(song_path)
         mixer.music.play(loops=0)
-        print(f"Now Playing: {song_path}")
+        print(f"This is gas: {song_path}")
     except Exception as e:
         print(f"song not found: {e}")
     audio = MP3(song_path)
@@ -93,6 +102,8 @@ def Play():
     update_seeker()  #begin updating!
     update_timer() #more updating!
     checkfortime()
+    playingsong = song
+    setsongplaying(playingsong)
 
 def getcurrent():
     global current_song
@@ -123,24 +134,28 @@ def Previous():
     if previousone:
         previousone = previousone[0] - 1
         thesong2 = songs_list.get(previousone)
-        song_path = os.path.join("C:/Users/grish/csfolders/mp3player/musicmaxxing",thesong2)
+        song_path = os.path.join(theplaylist_path,thesong2)
         mixer.music.load(song_path)
         mixer.music.play()
         songs_list.selection_clear(0, END)
         songs_list.activate(previousone)
         songs_list.selection_set(previousone)
+        playingsong = thesong2
+        setsongplaying(playingsong)
 
 def Next():
     nextone = songs_list.curselection()
     if nextone:
         nextone = nextone[0] + 1
         thesong3 = songs_list.get(nextone)
-        song_path = os.path.join("C:/Users/grish/csfolders/mp3player/musicmaxxing/", thesong3)
+        song_path = os.path.join(theplaylist_path, thesong3)
         mixer.music.load(song_path)
         mixer.music.play()
         songs_list.selection_clear(0, END)
         songs_list.activate(nextone)
         songs_list.selection_set(nextone)
+        playingsong = thesong3
+        setsongplaying(playingsong)
 
 def Shuffle():
     getcurrent()
@@ -149,19 +164,19 @@ def Shuffle():
     shuffleone = songs_list.curselection()
     playlistlength = 0
     for item in os.listdir(default_folder):
-        item_path = os.path.join("C:/Users/grish/csfolders/mp3player/musicmaxxing/",item)
+        item_path = os.path.join(theplaylist_path,item)
     if os.path.isfile(item_path):
         playlistlength += 1
     if shuffleone:
         shuffleone = [random.randint(0,playlistlength + 1)] 
         thesong4 = songs_list.get(shuffleone)
-        song_path = os.path.join("C:/Users/grish/csfolders/mp3player/musicmaxxing/", thesong4)
+        song_path = os.path.join(theplaylist_path, thesong4)
         print(current_song)
     if current_song == thesong4:
         Shuffle()
     else:
         thesongplaying2 = getcurrent()
-        print("Now playing,",thesong4)
+        playingsong = thesong4
         mixer.music.load(song_path)
         mixer.music.play()
         songs_list.selection_clear(0,END)
@@ -170,31 +185,49 @@ def Shuffle():
         global shuffletruth;
         shuffleval = True
         shuffletruth = shuffleval
-    
+        setsongplaying(playingsong)
+
+def setsongplaying(playingsong):
+    print("Now Playing:",playingsong)
+    nowplayinglabel.config(text=f"Now Playing: {playingsong}")
+
 def Mute():
     mixer.music.set_volume(0)
 
 def Unmute():
     mixer.music.set_volume(1)
+
+def SetVolume(value):
+    volume = float(value)/ 100.0
+    mixer.music.set_volume(volume)
 root = Tk()
 mixer.init()
-play_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/go!button.png")
-pause_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/stop!button.png")
-stop_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/eject!.png")
-resume_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/ya!button.png")
+
+def chooseplaylist():
+    global theplaylist_path
+    theplaylist_path = filedialog.askdirectory(initialdir="C:/Users/grish/csfolders/mp3player/playlists", title="Choose a Playlist!")
+    if theplaylist_path:
+        try:
+            fileslist=os.listdir(theplaylist_path)
+            playlistfileslist = [f for f in fileslist if f.endswith('.mp3')]
+            songs_list.delete(0,END)
+            for file_name in playlistfileslist:
+                songs_list.insert(END,file_name)
+        except Exception as e:
+            print("Error!")
+
 previous_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goback!button.png")
 next_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goforward!button.png")
 add_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/lenewsong!.png")
 delete_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/getridofdasong!.png")
 icon_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/yo!.png")
 shuffle_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/shuffle!.png")
-mute_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/mute!.png")
-unmute_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/unmute!.png")
+back_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/examplebackground.png")
 fe = fm.FontEntry(fname='C:/Users/grish/csfolders/mp3player/Assets/Newsreader-VariableFont_opsz,wght.ttf', name='Newsreader')
 fm.fontManager.ttflist.insert(0, fe)
 mpl.rcParams['font.family'] = fe.name
 root.title("Grish's Pretty Awesome Music Player")
-root.geometry("385x400")
+root.geometry("400x400")
 root.configure(bg="#120F1B")
 root.iconphoto(True, icon_img)
 thefont = font.Font(family='Newsreader', size=11)#arial used as fallback, you have to install Newsreader to your system to use it
@@ -202,39 +235,98 @@ thefont = font.Font(family='Newsreader', size=11)#arial used as fallback, you ha
 #file included with repo
 songs_list = Listbox(root, selectmode=SINGLE, bg="#A996EB", fg="#000000", width=41, height=15,font=thefont)
 songs_list.grid(row=0, column=0, columnspan=9, padx=10, pady=10)
-playbutton = Button(root, image=play_img, bg="#A996EB", font=thefont, command=Play)
-playbutton.place(x=10, y=350)
-pausebutton = Button(root, image=pause_img, bg="#A996EB", font=thefont, command=Pause)
-pausebutton.place(x=50, y=350)
-stopbutton = Button(root, image=stop_img, bg="#A996EB", font=thefont, command=Stop)
-stopbutton.place(x=130, y=350)
-resumebutton = Button(root, image=resume_img, bg="#A996EB", font=thefont, command=Resume)
-resumebutton.place(x=90, y=350)
 previousbutton = Button(root, image=previous_img, bg="#A996EB", font=thefont, command=Previous)
-previousbutton.place(x=170, y=350)
+previousbutton.place(x=90, y=350)
 nextbutton = Button(root, image=next_img, bg="#A996EB", font=thefont, command=Next)
-nextbutton.place(x=210, y=350)
-seeker = Scale(root, from_=0, to=100, orient=HORIZONTAL, length=90, bg="#A996EB", fg="#000000", font=thefont, command=setdamusic)
-seeker.place(x=250,y=348)
+nextbutton.place(x=305, y=350)
+seeker = Scale(root, from_=0, to=100, orient=HORIZONTAL, length=166, bg="#A996EB", fg="#000000", font=thefont, command=setdamusic)
+seeker.place(x=130,y=348)
 addbutton = Button(root,image=add_img,bg="#120F1B", font=thefont,command=addlesongs)
-addbutton.place(x=346,y=10)
+addbutton.place(x=353,y=10)
 deletebutton=Button(root, image=delete_img,bg="#120F1B",font=thefont,command=deletelesong)
-deletebutton.place(x=346,y=50)
+deletebutton.place(x=353,y=55)
 timer_label= Label(root, text="00:00", bg="#120F1B", fg="#FFFFFF", font=thefont)
 timer_label.place(x=298,y=315)
 shufflebutton = Button(root, image=shuffle_img, bg="#120F1B",font=thefont, command=Shuffle)
-shufflebutton.place(x=346,y=90)
-mutebutton = Button(root, image=mute_img, bg="#120F1B",font=thefont, command=Mute)
-mutebutton.place(x=346,y=130)
-unmutebutton = mutebutton = Button(root, image=unmute_img, bg="#120F1B",font=thefont, command=Unmute)
-unmutebutton.place(x=346,y=170)
+shufflebutton.place(x=353,y=100)
+volumeslider = Scale(root,from_=100, to=0,length=150, bg="#A996EB", fg="#000000", font=thefont,command = SetVolume)
+volumeslider.set(mixer.music.get_volume()*100)
+volumeslider.place(x=346,y=188)
 themenu = Menu(root)
 root.config(menu=themenu)
 addsongmenu = Menu(themenu, tearoff=False)
 themenu.add_cascade(label="The Menu", menu=addsongmenu)
 addsongmenu.add_command(label="Add Songs", command=addlesongs)
 addsongmenu.add_command(label="Delete Song", command=deletelesong)
+addsongmenu.add_command(label="Browse Playlists", command=chooseplaylist)
+nowplayinglabel = Label(root, text="",bg="#A996EB",fg="#000000", font=thefont)
+nowplayinglabel.place(x=10,y=315)
 
+class MuterButton(tk.Button):
+    def __init__(self, parent, images, functions, initial_state=0, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.images = [PhotoImage(file=image) for image in images]
+        self.functions = functions
+        self.state = initial_state
+        self.config(image=self.images[self.state], command=self.on_click)
+        self.image = self.images[self.state] # Keep a reference to the image
+
+    def on_click(self):
+        self.state = (self.state + 1) % len(self.images)
+        self.config(image=self.images[self.state])
+        self.image = self.images[self.state]
+        self.functions[self.state]()
+if __name__ == "__main__":
+    themutebutton = MuterButton(
+        root,
+        images=["C:/Users/grish/csfolders/mp3player/Assets/mute!.png","C:/Users/grish/csfolders/mp3player/Assets/unmute!.png"],
+        functions=[Unmute,Mute],
+        bg="#120F1B"
+    )
+    themutebutton.place(x=353,y=145)
+
+class PlayButton(tk.Button):
+    def __init__(self, parent, images, functions, initial_state=0, **kwargs): 
+        super().__init__(parent, **kwargs)
+        self.images = [PhotoImage(file=image) for image in images]
+        self.functions = functions
+        self.state = initial_state
+        self.config(image=self.images[self.state], command=self.on_click)
+        self.image = self.images[self.state] # Keep a reference to the image
+    def on_click(self):
+        self.state = (self.state + 1) % len(self.images)
+        self.config(image=self.images[self.state])
+        self.image = self.images[self.state]
+        self.functions[self.state]()
+if __name__ == "__main__":
+    theplaybutton = PlayButton(
+    root,
+    images=["C:/Users/grish/csfolders/mp3player/Assets/stop!button.png","C:/Users/grish/csfolders/mp3player/Assets/go!button.png"],
+    functions=[Resume,Pause],
+    bg="#A996EB"
+    )
+    theplaybutton.place(x=10,y=350)
+
+class LoadButton(tk.Button):
+    def __init__(self, parent, images, functions, initial_state=0, **kwargs): 
+        super().__init__(parent, **kwargs)
+        self.images = [PhotoImage(file=image) for image in images]
+        self.functions = functions
+        self.state = initial_state
+        self.config(image=self.images[self.state], command=self.on_click)
+        self.image = self.images[self.state] # Keep a reference to the image
+    def on_click(self):
+        self.state = (self.state + 1) % len(self.images)
+        self.config(image=self.images[self.state])
+        self.image = self.images[self.state]
+        self.functions[self.state]()
+if __name__ == "__main__":
+    theloadbutton = LoadButton(
+    root,
+    images=["C:/Users/grish/csfolders/mp3player/Assets/insert!.png","C:/Users/grish/csfolders/mp3player/Assets/eject!.png"],
+    functions=[Stop,Play],
+    bg="#A996EB"
+    )
+    theloadbutton.place(x=50,y=350)
 load_folder_songs(default_folder)
-
 mainloop()
