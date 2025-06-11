@@ -18,7 +18,7 @@ SONG_END_EVENT = pygame.USEREVENT
 mixer.music.set_endevent(SONG_END_EVENT)
 current_song = None
 is_seeking = False
-default_folder = "C:/Users/grish/csfolders/mp3player/playlists/musicmaxxing"
+default_folder = "" #insert your default playlist here 
 theplaylist_path = default_folder
 shuffletruth = False
 
@@ -207,7 +207,7 @@ mixer.init()
 
 def chooseplaylist():
     global theplaylist_path
-    theplaylist_path = filedialog.askdirectory(initialdir="C:/Users/grish/csfolders/mp3player/playlists", title="Choose a Playlist!")
+    theplaylist_path = filedialog.askdirectory(initialdir=""#path to your playlists folder here, title="Choose a Playlist!")
     if theplaylist_path:
         try:
             fileslist=os.listdir(theplaylist_path)
