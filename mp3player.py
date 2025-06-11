@@ -217,22 +217,22 @@ def chooseplaylist():
                 songs_list.insert(END,file_name)
         except Exception as e:
             print("Error!")
-
-previous_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goback!button.png")
-next_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goforward!button.png")
-add_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/lenewsong!.png")
-delete_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/getridofdasong!.png")
-icon_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/yo!.png")
-shuffle_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/shuffle!.png")
-back_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/examplebackground.png")
-fe = fm.FontEntry(fname='C:/Users/grish/csfolders/mp3player/Assets/Newsreader-VariableFont_opsz,wght.ttf', name='Newsreader')
+#replace with the path for the assets you downloaded 
+previous_img = PhotoImage(file="")
+next_img = PhotoImage(file="")
+add_img = PhotoImage(file="")
+delete_img = PhotoImage(file="")
+icon_img = PhotoImage(file="")
+shuffle_img=PhotoImage(file="")
+back_img=PhotoImage(file="")
+fe = fm.FontEntry(fname='', name='Newsreader')#for this to work, you need to download the font to your system.
 fm.fontManager.ttflist.insert(0, fe)
 mpl.rcParams['font.family'] = fe.name
 root.title("Grish's Pretty Awesome Music Player")
 root.geometry("400x400")
 root.configure(bg="#120F1B")
 root.iconphoto(True, icon_img)
-thefont = font.Font(family='Newsreader', size=11)#arial used as fallback, you have to install Newsreader to your system to use it
+thefont = font.Font(family='Arial', size=11)#arial used as fallback, you have to install Newsreader to your system to use it
 #I included the steps to start setting up the font in the mp3 player, but you'd have to use a tool to convert it into a format that tkinter understands
 #file included with repo
 songs_list = Listbox(root, selectmode=SINGLE, bg="#A996EB", fg="#000000", width=41, height=15,font=thefont)
@@ -280,7 +280,7 @@ class MuterButton(tk.Button):
 if __name__ == "__main__":
     themutebutton = MuterButton(
         root,
-        images=["C:/Users/grish/csfolders/mp3player/Assets/mute!.png","C:/Users/grish/csfolders/mp3player/Assets/unmute!.png"],
+        images=["",""]#assets for your mute button,
         functions=[Unmute,Mute],
         bg="#120F1B"
     )
@@ -302,7 +302,7 @@ class PlayButton(tk.Button):
 if __name__ == "__main__":
     theplaybutton = PlayButton(
     root,
-    images=["C:/Users/grish/csfolders/mp3player/Assets/stop!button.png","C:/Users/grish/csfolders/mp3player/Assets/go!button.png"],
+    images=["",""],#assets for your play button
     functions=[Resume,Pause],
     bg="#A996EB"
     )
@@ -324,7 +324,7 @@ class LoadButton(tk.Button):
 if __name__ == "__main__":
     theloadbutton = LoadButton(
     root,
-    images=["C:/Users/grish/csfolders/mp3player/Assets/insert!.png","C:/Users/grish/csfolders/mp3player/Assets/eject!.png"],
+    images=["",""],#assets for your 
     functions=[Stop,Play],
     bg="#A996EB"
     )
