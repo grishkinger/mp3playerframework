@@ -1,6 +1,7 @@
 <p>
 <img src="https://cdn.iconscout.com/icon/free/png-256/free-python-2-226051.png" width="64" height="64" border="10"/>
 </p>
+<p>
 # mp3playerframework
  - At the moment, I'm self teaching myself programming.
  - With every new language I cover the basics of,I'm building a small project to accompany it.
@@ -16,3 +17,4 @@
     - Shuffle
     - Back/Forward Skip Options
     - Add/Delete songs from playlist folders at will
+</p>
