@@ -8,7 +8,7 @@
  - Current features are:
     - Seeker Bar to select what part of the music you want to guide to.
     - Stop/Start Button
-    - Browse Playlists (WIP, will integrate this into a GUI)
+    - Browse Playlists (GUI is WIP)
     - Volume Slider
     - Shuffle
     - Back/Forward Skip Options
