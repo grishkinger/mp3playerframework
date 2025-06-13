@@ -1,4 +1,4 @@
-
+import subprocess
 import pygame
 from pygame import mixer
 from tkinter import *
@@ -210,16 +210,17 @@ mixer.init()
 
 def chooseplaylist():
     global theplaylist_path
-    theplaylist_path = filedialog.askdirectory(initialdir="C:/Users/grish/csfolders/mp3player/playlists", title="Choose a Playlist!")
-    if theplaylist_path:
-        try:
-            fileslist=os.listdir(theplaylist_path)
-            playlistfileslist = [f for f in fileslist if f.endswith('.mp3')]
-            songs_list.delete(0,END)
-            for file_name in playlistfileslist:
-                songs_list.insert(END,file_name)
-        except Exception as e:
-            print("Error!")
+    opened = subprocess.run(["python", "playlistsgui.py"],
+                   capture_output=True,
+                   text=True)
+    chosen_folder = opened.stdout.strip()
+    theplaylist_path =  chosen_folder 
+    if os.path.isdir(chosen_folder):
+        fileslist=os.listdir(theplaylist_path)
+        playlistfileslist = [f for f in fileslist if f.endswith('.mp3')]
+        songs_list.delete(0,END)
+        for file_name in playlistfileslist:
+            songs_list.insert(END,file_name)
 
 previous_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goback!button.png")
 next_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goforward!button.png")
