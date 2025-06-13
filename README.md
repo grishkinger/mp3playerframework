@@ -1,6 +1,6 @@
 <p>
 <img src="https://cdn.iconscout.com/icon/free/png-256/free-python-2-226051.png" width="64" height="64" border="10"/>
-<img src="https://www.google.com/imgres?q=pixel%20art%20record%20player&imgurl=https%3A%2F%2Fart.pixilart.com%2Fthumb%2Fsr2fd991d83f884.png&imgrefurl=https%3A%2F%2Fwww.pixilart.com%2Fgallery%2Ftags%2Frecordplayer&docid=pck8R_w34o2GNM&tbnid=VgHk9b24q1alGM&vet=12ahUKEwjE8ZXz3O2NAxWFlYkEHXdPCfQQM3oECCIQAA..i&w=600&h=600&hcb=2&ved=2ahUKEwjE8ZXz3O2NAxWFlYkEHXdPCfQQM3oECCIQAA" width="64" height="64" border="10"/>
+<img src="https://art.pixilart.com/thumb/sr2fd991d83f884.png" width="64" height="64" border="10"/>
 </p>
 <h1>
 mp3playerframework
