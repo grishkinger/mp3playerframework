@@ -3,7 +3,7 @@
 <img src="https://art.pixilart.com/thumb/sr2fd991d83f884.png" width="64" height="64" border="10"/>
 </p>
 <h1>
-mp3playerframework
+mp3 player framework
 </h1>
  <p>
   - At the moment, I'm self teaching myself programming. <br>
@@ -16,11 +16,19 @@ mp3playerframework
   <h3>Super simple framework for an mp3 player. You can create your own using the same format.</h3>
   Current features are:
     <ul>
-     <li>Seeker Bar to select what part of the music you want to guide to.</li>
+    <li>Seeker Bar to select what part of the music you want to guide to.</li>
     <li>Stop/Start Button</li>
     <li>Browse Playlists (GUI is WIP)</li>
     <li>Volume Slider</li>
     <li>Shuffle</li>
     <li>Back/Forward Skip Options</li>
     <li>Add/Delete songs from playlist folders at will</li>
+    </ul>
+    <br>
+     <h3>TO BE ADDED:</h3>
+    <ul>
+     <li>] Direct Integration with the SpotDL Open Source Project.</li>
+     <li> Better GUI for playlist selector</li>
+     <li> Easier customization (inbuilt commands to change the color</li>
+     <li> With port over to PyQT, maybe inbuilt video previews for songs?</li>
     </ul>
