@@ -27,7 +27,7 @@ mp3 player framework
     <br>
      <h3>TO BE ADDED:</h3>
     <ul>
-     <li>] Direct Integration with the SpotDL Open Source Project.</li>
+     <li> Direct Integration with the SpotDL Open Source Project.</li>
      <li> Better GUI for playlist selector</li>
      <li> Easier customization (inbuilt commands to change the color</li>
      <li> With port over to PyQT, maybe inbuilt video previews for songs?</li>
