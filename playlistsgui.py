@@ -23,7 +23,7 @@ class FileChooser(QWidget):
         self.icon = QIcon(icon_path)
         self.filetree.setHeaderLabels(["Playlists"])
         self.filetree.itemDoubleClicked.connect(self.folderselector)
-        default_path = "C:/Users/grish/csfolders/mp3player/playlists"
+        default_path = ""
         self.populate_tree(default_path)
         self.filetree.setIconSize(QSize(24, 24))
         layout = QVBoxLayout()
