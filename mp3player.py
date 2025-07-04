@@ -1,4 +1,4 @@
-import subprocess
+
 import pygame
 from pygame import mixer
 from tkinter import *
@@ -18,7 +18,7 @@ SONG_END_EVENT = pygame.USEREVENT
 mixer.music.set_endevent(SONG_END_EVENT)
 current_song = None
 is_seeking = False
-default_folder = "C:/Users/grish/csfolders/mp3player/playlists/musicmaxxing"
+default_folder = "" #insert your default playlist here 
 theplaylist_path = default_folder
 shuffletruth = False
 
@@ -81,6 +81,7 @@ def timer(seconds):
 def Play():
     global current_song
     global theplaylist_path
+    global song_duration
     song = songs_list.get(ACTIVE)
     if mixer.music.get_busy():
         return
@@ -104,6 +105,8 @@ def Play():
     checkfortime()
     playingsong = song
     setsongplaying(playingsong)
+    progressorreset()
+    progressor()
 
 def getcurrent():
     global current_song
@@ -142,6 +145,8 @@ def Previous():
         songs_list.selection_set(previousone)
         playingsong = thesong2
         setsongplaying(playingsong)
+        progressorreset()
+        progressor()
 
 def Next():
     nextone = songs_list.curselection()
@@ -156,6 +161,8 @@ def Next():
         songs_list.selection_set(nextone)
         playingsong = thesong3
         setsongplaying(playingsong)
+        progressorreset()
+        progressor()
 
 def Shuffle():
     getcurrent()
@@ -163,8 +170,9 @@ def Shuffle():
     thesongplaying2 = 0
     shuffleone = songs_list.curselection()
     playlistlength = 0
-    for item in os.listdir(theplaylist_path):
+    for item in os.listdir(default_folder):
         item_path = os.path.join(theplaylist_path,item)
+    if os.path.isfile(item_path):
         playlistlength += 1
     if shuffleone:
         shuffleone = [random.randint(0,playlistlength + 1)] 
@@ -185,10 +193,6 @@ def Shuffle():
         shuffleval = True
         shuffletruth = shuffleval
         setsongplaying(playingsong)
-        getcurrent()
-        update_seeker()  #begin updating!
-        update_timer() #more updating!
-        checkfortime()
 
 def setsongplaying(playingsong):
     max_length = 25 
@@ -210,33 +214,38 @@ mixer.init()
 
 def chooseplaylist():
     global theplaylist_path
-    opened = subprocess.run(["python", "playlistsgui.py"],
-                   capture_output=True,
-                   text=True)
-    chosen_folder = opened.stdout.strip()
-    theplaylist_path =  chosen_folder 
-    if os.path.isdir(chosen_folder):
-        fileslist=os.listdir(theplaylist_path)
-        playlistfileslist = [f for f in fileslist if f.endswith('.mp3')]
-        songs_list.delete(0,END)
-        for file_name in playlistfileslist:
-            songs_list.insert(END,file_name)
-
-previous_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goback!button.png")
-next_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/goforward!button.png")
-add_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/lenewsong!.png")
-delete_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/getridofdasong!.png")
-icon_img = PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/yo!.png")
-shuffle_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/shuffle!.png")
-back_img=PhotoImage(file="C:/Users/grish/csfolders/mp3player/Assets/examplebackground.png")
-fe = fm.FontEntry(fname='C:/Users/grish/csfolders/mp3player/Assets/Newsreader-VariableFont_opsz,wght.ttf', name='Newsreader')
+    theplaylist_path = filedialog.askdirectory(initialdir="")#path to your playlists folder here, title="Choose a Playlist!")
+    if theplaylist_path:
+        try:
+            fileslist=os.listdir(theplaylist_path)
+            playlistfileslist = [f for f in fileslist if f.endswith('.mp3')]
+            songs_list.delete(0,END)
+            for file_name in playlistfileslist:
+                songs_list.insert(END,file_name)
+        except Exception as e:
+            print("Error!")
+def progressor():
+    global song_duration
+    progressbar.start()
+    root.after(song_duration * 1000, progressbar.stop)
+def progressorreset():
+      progressbar['value']=0
+#replace with the path for the assets you downloaded 
+previous_img = PhotoImage(file="")
+next_img = PhotoImage(file="")
+add_img = PhotoImage(file="")
+delete_img = PhotoImage(file="")
+icon_img = PhotoImage(file="")
+shuffle_img=PhotoImage(file="")
+back_img=PhotoImage(file="")
+fe = fm.FontEntry(fname='', name='Newsreader')#for this to work, you need to download the font to your system.
 fm.fontManager.ttflist.insert(0, fe)
 mpl.rcParams['font.family'] = fe.name
 root.title("Grish's Pretty Awesome Music Player")
 root.geometry("400x400")
 root.configure(bg="#120F1B")
 root.iconphoto(True, icon_img)
-thefont = font.Font(family='Newsreader', size=11)#arial used as fallback, you have to install Newsreader to your system to use it
+thefont = font.Font(family='Arial', size=11)#arial used as fallback, you have to install Newsreader to your system to use it
 #I included the steps to start setting up the font in the mp3 player, but you'd have to use a tool to convert it into a format that tkinter understands
 #file included with repo
 songs_list = Listbox(root, selectmode=SINGLE, bg="#A996EB", fg="#000000", width=41, height=15,font=thefont)
@@ -258,6 +267,8 @@ shufflebutton.place(x=353,y=100)
 volumeslider = Scale(root,from_=100, to=0,length=150, bg="#A996EB", fg="#000000", font=thefont,command = SetVolume)
 volumeslider.set(mixer.music.get_volume()*100)
 volumeslider.place(x=346,y=188)
+progressbar = ttk.Progressbar(root, orient=HORIZONTAL, length=150, mode='indeterminate', style='TProgressbar')
+progressbar.place(x=10, y=315)
 themenu = Menu(root)
 root.config(menu=themenu)
 addsongmenu = Menu(themenu, tearoff=False)
@@ -284,8 +295,8 @@ class MuterButton(tk.Button):
 if __name__ == "__main__":
     themutebutton = MuterButton(
         root,
-        images=["C:/Users/grish/csfolders/mp3player/Assets/mute!.png","C:/Users/grish/csfolders/mp3player/Assets/unmute!.png"],
-        functions=[Unmute,Mute],
+        images=["",""], # assets for your mute button
+        functions=[Unmute, Mute],
         bg="#120F1B"
     )
     themutebutton.place(x=353,y=145)
@@ -306,9 +317,9 @@ class PlayButton(tk.Button):
 if __name__ == "__main__":
     theplaybutton = PlayButton(
     root,
-    images=["C:/Users/grish/csfolders/mp3player/Assets/stop!button.png","C:/Users/grish/csfolders/mp3player/Assets/go!button.png"],
+    images=["",""],#assets for your play button
     functions=[Resume,Pause],
-    bg="#A996EB"
+    bg="#121214"
     )
     theplaybutton.place(x=10,y=350)
 
@@ -328,7 +339,7 @@ class LoadButton(tk.Button):
 if __name__ == "__main__":
     theloadbutton = LoadButton(
     root,
-    images=["C:/Users/grish/csfolders/mp3player/Assets/insert!.png","C:/Users/grish/csfolders/mp3player/Assets/eject!.png"],
+    images=["",""],#assets for your 
     functions=[Stop,Play],
     bg="#A996EB"
     )
