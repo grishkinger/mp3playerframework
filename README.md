@@ -24,6 +24,7 @@ mp3 player framework
     <li>Shuffle</li>
     <li>Back/Forward Skip Options</li>
     <li>Add/Delete songs from playlist folders at will</li>
+    <li>(WIP) Add playlists from Spotify using Spotify Web URL</li>
     </ul>
     <br>
      <h3>TO BE ADDED:</h3>
